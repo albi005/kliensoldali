@@ -1,8 +1,14 @@
-import { render } from 'preact';
+import {render} from 'preact';
 import './index.css';
 import {Login} from "./Login";
-function App()
-{
-    return <Login />
+
+if (localStorage["theme"]) {
+    document.documentElement.classList.add("theme-light");
 }
-render( <App />, document.getElementById( 'app' ) );
+
+
+function App() {
+    return <Login/>
+}
+
+render(<App/>, document.getElementById('app'));

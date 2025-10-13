@@ -9,7 +9,10 @@ export function Login() {
     let [register, setRegister] = useState(false);
 
     return <div class="Login">
-        <span class="logo" onClick={_ => document.documentElement.classList.toggle("theme-light")}>
+        <span class="logo" onClick={_ => {
+            document.documentElement.classList.toggle("theme-light");
+            localStorage["theme"] = localStorage["theme"] ? "" : "light";
+        }}>
             🗪
         </span>
         <TextInput type="email" placeholder="Email (someone@example.com)" value={email} onChange={
