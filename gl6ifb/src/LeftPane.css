@@ -1,0 +1,5 @@
+.LeftPane {
+    grid-template-rows: auto 1fr;
+    /* Függőlegesen két részre osztjuk, a felső csak egy soros, az alsó a maradék helyet veszi fel */
+    border-right: 1px solid gray; /* Elválasztó keret a jobb oldalon */
+}
