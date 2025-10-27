@@ -1,5 +1,22 @@
 .RightPane {
-    grid-template-rows: 1fr auto;
-    /* Függőlegesen két részre osztjuk, az alsó csak egy soros, a felső a
-   maradék helyet veszi fel */
+    grid-template-rows: auto 1fr auto; /*Függőlegesen három részre osztjuk, a felső és alsó csak egy soros, a középső a maradék helyet veszi fel*/
+
+    .conversation-header {
+        padding-inline: 8px; /*Hely*/
+    }
+
+    .messages {
+        overflow-y: auto; /*Függőleges scroll bar bekapcsolása*/
+        padding: 8px; /*Hely*/
+        justify-items: start; /*Balra rendezés*/
+        align-content: start; /*Felülre rendezés*/
+        gap: 8px; /*Két üzenet közötti hely*/
+        grid-template-rows: auto; /*Az üzenetek függőleges méretének minimálisra (contentre) állítása*/
+    }
+
+    @media (min-width: 1024px) {
+        .back-button {
+            display: none;
+        }
+    }
 }

@@ -11,17 +11,14 @@ if (localStorage["theme"]) {
 }
 
 function App() {
-    let [loggedIn, setLoggedIn] = useState(false);
-    useEffect(
-        () => {
-            const listener = () => setLoggedIn(!!chatService.inbox);
-            chatService.addListener(listener);
-            return () => chatService.removeListener(listener);
-        },
-        []
-    );
-
-    return loggedIn ? <Main/> : <Login/>
+    let [renderCount, setRenderCount] = useState(1);
+    console.log("App render count: " + renderCount);
+    useEffect(() => {
+        const listener = () => setRenderCount(x => x + 1);
+        chatService.addListener(listener);
+        return () => chatService.removeListener(listener);
+    }, []);
+    return chatService.inbox ? <Main/> : <Login/>
 }
 
 render(<App/>, document.getElementById('app'));
