@@ -1,4 +1,5 @@
 const cacheName = "v1";
+
 async function impl(e) {
     let cache = await caches.open(cacheName); // Cache megnyitása, async
     let cacheResponse = await cache.match(e.request); // Lookup
@@ -12,3 +13,10 @@ async function impl(e) {
 }
 
 self.addEventListener("fetch", e => e.respondWith(impl(e))); // Eseményre feliratkozás
+
+self.addEventListener('push', e => {
+    const text = e.data?.text();
+    e.waitUntil(
+        self.registration.showNotification('Chat notification', {body: text})
+    );
+});

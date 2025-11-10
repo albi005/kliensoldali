@@ -11,6 +11,8 @@ if (localStorage["theme"]) {
     document.documentElement.classList.add("theme-light");
 }
 
+Notification.requestPermission().then(r => {});
+
 function App() {
     let [renderCount, setRenderCount] = useState(1);
     console.log("App render count: " + renderCount);
