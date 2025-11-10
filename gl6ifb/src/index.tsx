@@ -5,6 +5,7 @@ import {useState} from "preact/hooks";
 import {chatService} from "./ChatService";
 import {useEffect} from "preact/hooks";
 import {Login} from "./Login";
+import "./Pwa";
 
 if (localStorage["theme"]) {
     document.documentElement.classList.add("theme-light");
