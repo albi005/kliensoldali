@@ -4,8 +4,8 @@
       "http": {
         "commandName": "Project",
         "dotnetRunMessages": true,
-        "launchBrowser": true,
-        "applicationUrl": "http://todoreact.dev.localhost:5157",
+        "launchBrowser": false,
+        "applicationUrl": "http://localhost:5157",
         "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development"
         }
