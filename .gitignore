@@ -1,1 +1,6 @@
 **.zip
+.idea
+bin/
+obj/
+**.user
+**.db*
