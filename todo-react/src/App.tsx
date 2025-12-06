@@ -1,6 +1,6 @@
 import "./index.css";
 
-import {Slop} from "./Slop";
+import {TodoList} from "./TodoList";
 import {CssBaseline} from "@mui/material";
 
 export function App() {
@@ -9,7 +9,7 @@ export function App() {
             <CssBaseline />
             <div className="app">
                 <h1>TodoReact</h1>
-                <Slop/>
+                <TodoList/>
             </div>
         </>
     );
