@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Stack from "@mui/material/Stack";
+import DateTimeSelector from "@/components/DateTimeSelector.tsx";
 
 const getPresetDueDate = (preset: string): string | undefined => {
   if (preset === "none" || preset === "custom") {
@@ -51,15 +52,9 @@ export function TodoList() {
     return storedTodos ? JSON.parse(storedTodos) : [];
   });
   const [newTodoTitle, setNewTodoTitle] = useState("");
-  const [newTodoDueDate, setNewTodoDueDate] = useState("");
+  const [newTodoDueDate, setNewTodoDueDate] = useState<Date>(new Date());
   const [newTodoDueTime, setNewTodoDueTime] = useState("");
   const [dueDatePreset, setDueDatePreset] = useState("none");
-
-  useEffect(() => {
-    if ("Notification" in window && Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
-  }, []);
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -87,7 +82,7 @@ export function TodoList() {
   const addTodo = () => {
     if (newTodoTitle.trim() === "") return;
 
-    let dueDate: string | undefined;
+    let dueDate: Date | undefined;
     if (dueDatePreset === "custom") {
       dueDate =
         newTodoDueDate && newTodoDueTime
@@ -152,29 +147,7 @@ export function TodoList() {
         </FormControl>
         {dueDatePreset === "custom" && (
           <>
-            <TextField
-              label="Due Date"
-              type="date"
-              variant="outlined"
-              value={newTodoDueDate}
-              onChange={(e) => setNewTodoDueDate(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              label="Due Time"
-              type="time"
-              variant="outlined"
-              value={newTodoDueTime}
-              onChange={(e) => setNewTodoDueTime(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              inputProps={{
-                step: 1, // 1 second
-              }}
-            />
+              <DateTimeSelector value={newTodoDueDate} onChange={d => setNewTodoDueDate(d)}/>
           </>
         )}
         <Button variant="contained" onClick={addTodo}>

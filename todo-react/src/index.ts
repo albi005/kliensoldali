@@ -6,6 +6,18 @@ const server = serve({
     routes: {
         // Serve index.html for all unmatched routes.
         "/*": index,
+        
+        "/sw.js": async () => {
+            const result = await Bun.build({
+                entrypoints: ['./src/sw.ts'],
+            });
+
+            return new Response(result.outputs[0], {
+                headers: {
+                    'Content-Type': 'application/javascript',
+                },
+            });
+        },
 
         "/api/hello": {
             async GET(req) {

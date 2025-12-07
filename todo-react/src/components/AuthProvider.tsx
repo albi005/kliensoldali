@@ -5,7 +5,7 @@ import {server} from "@/Server.ts";
 export const useAuth = () => useContext(AuthContext)
 
 export type Auth = {
-    userId: string | null
+    userId: "" | string | null
     logIn: (userId: string) => void
     logOut: () => void
 }
@@ -18,14 +18,12 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     const value = useMemo<Auth>(() => ({
         userId,
         logIn: (userId: string) => setUserId(userId),
-        logOut: () => setUserId(null),
+        logOut: () => setUserId(""),
     }), [userId]);
 
     useEffect(() => {
         server.me().then(userId => {
-            if (userId) {
-                setUserId(userId);
-            }
+            setUserId(userId);
         });
     }, []);
     

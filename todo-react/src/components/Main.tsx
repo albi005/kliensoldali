@@ -1,7 +1,6 @@
 import {useAuth} from "@/components/AuthProvider.tsx";
 import {Login} from "./Login";
-import LogOutButton from "@/components/LogOutButton.tsx";
-import {TodoList} from "@/components/TodoList.tsx";
+import {LoggedIn} from "@/components/LoggedIn.tsx";
 
 export default function Main() {
     const {userId} = useAuth();
@@ -17,7 +16,6 @@ export default function Main() {
         );
     
     return <>
-        <LogOutButton/>
-        <TodoList/>
+        <LoggedIn/>
     </>;
 }

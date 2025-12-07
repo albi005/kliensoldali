@@ -31,6 +31,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Push notifications
+// https://tpeczek.github.io/Lib.Net.Http.WebPush/articles/aspnetcore-integration.html
+builder.Services.AddMemoryCache();
+builder.Services.AddMemoryVapidTokenCache();
+builder.Services.AddPushServiceClient(builder.Configuration.GetSection("Push").Bind);
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
@@ -48,6 +54,12 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
+
+{
+    await using var serviceScope = app.Services.CreateAsyncScope();
+    var services = serviceScope.ServiceProvider;
+    await services.GetRequiredService<ApplicationDbContext>().Database.MigrateAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
