@@ -29,10 +29,11 @@ export async function createCredential(headers: { [x: number]: any; }, signal: a
     });
     const optionsJson = await optionsResponse.json();
     const options = PublicKeyCredential.parseCreationOptionsFromJSON(optionsJson);
-    return await navigator.credentials.create({
+    const credential =  await navigator.credentials.create({
         publicKey: {...options, authenticatorSelection: {residentKey: "required"}},
         signal
     });
+    return credential ? credential as PublicKeyCredential : null;
 }
 
 export async function registerCredential(credential: PublicKeyCredential, headers: { [x: number]: any; }, signal: any) {
@@ -54,10 +55,9 @@ export async function signInWithCredential(credential: PublicKeyCredential, head
         body: JSON.stringify(JSON.stringify(credential)),
         signal,
     });
-    console.log(response);
 }
 
-export async function requestCredential(email: string | null, mediation: string | undefined, headers: {
+export async function requestCredential(email: string | null, mediation: CredentialMediationRequirement | undefined, headers: {
     [x: number]: any;
 } | undefined, signal: undefined) {
     const optionsResponse = await fetchWithErrorHandling(`/Account/PasskeyRequestOptions?username=${email}`, {
@@ -67,9 +67,9 @@ export async function requestCredential(email: string | null, mediation: string 
     });
     const optionsJson = await optionsResponse.json();
     const options = PublicKeyCredential.parseRequestOptionsFromJSON(optionsJson);
-    return await navigator.credentials.get({publicKey: options, mediation, signal});
+    const credential = await navigator.credentials.get({publicKey: options, mediation, signal});
+    return credential ? credential as PublicKeyCredential : null;
 }
-
 
 export const server = new class Server {
     /**
@@ -80,7 +80,7 @@ export const server = new class Server {
         return await response.text();
     }
 
-    async logout(): Promise<void> {
+    async logOut(): Promise<void> {
         await fetch(`${baseUrl}/api/logout`, {
             method: "POST",
             credentials: "include"
