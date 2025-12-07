@@ -15,6 +15,7 @@ export function App() {
     }, [refreshTrigger]);
 
     const handleLogout = async () => {
+        localStorage.clear();
         await server.logout();
         setUserId("");
     };
