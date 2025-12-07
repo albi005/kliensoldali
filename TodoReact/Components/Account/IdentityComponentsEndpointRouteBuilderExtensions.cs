@@ -21,6 +21,12 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
         ArgumentNullException.ThrowIfNull(endpoints);
 
         var accountGroup = endpoints.MapGroup("/Account");
+        // accountGroup.RequireCors(o => o
+        //     .WithOrigins("http://localhost:5156")
+        //     .AllowAnyHeader()
+        //     .AllowAnyMethod()
+        //     .AllowCredentials()
+        // );
 
         accountGroup.MapPost("/PerformExternalLogin", (
             HttpContext context,
@@ -28,9 +34,11 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
             [FromForm] string provider,
             [FromForm] string returnUrl) =>
         {
-            IEnumerable<KeyValuePair<string, StringValues>> query = [
+            IEnumerable<KeyValuePair<string, StringValues>> query =
+            [
                 new("ReturnUrl", returnUrl),
-                new("Action", ExternalLogin.LoginCallbackAction)];
+                new("Action", ExternalLogin.LoginCallbackAction)
+            ];
 
             var redirectUrl = UriHelper.BuildRelative(
                 context.Request.PathBase,
@@ -59,13 +67,9 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
             await antiforgery.ValidateRequestAsync(context);
 
             var user = await userManager.GetUserAsync(context.User);
-            if (user is null)
-            {
-                return Results.NotFound($"Unable to load user with ID '{userManager.GetUserId(context.User)}'.");
-            }
 
-            var userId = await userManager.GetUserIdAsync(user);
-            var userName = await userManager.GetUserNameAsync(user) ?? "User";
+            var userId = user is not null ? await userManager.GetUserIdAsync(user) : Guid.NewGuid().ToString("N");
+            var userName = (user is not null ? await userManager.GetUserNameAsync(user) : null) ?? userId;
             var optionsJson = await signInManager.MakePasskeyCreationOptionsAsync(new()
             {
                 Id = userId,
@@ -73,6 +77,60 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
                 DisplayName = userName
             });
             return TypedResults.Content(optionsJson, contentType: "application/json");
+        });
+
+        accountGroup.MapPost("/RegisterWithPasskey", async (
+            HttpContext context,
+            [FromServices] UserManager<ApplicationUser> userManager,
+            [FromServices] SignInManager<ApplicationUser> signInManager,
+            [FromServices] IAntiforgery antiforgery,
+            [FromBody] string credentialJson) =>
+        {
+            await antiforgery.ValidateRequestAsync(context);
+
+            var attestationResult = await signInManager.PerformPasskeyAttestationAsync(credentialJson);
+            if (!attestationResult.Succeeded)
+                return Results.BadRequest();
+
+            ApplicationUser user = new()
+            {
+                Id = attestationResult.UserEntity.Id,
+                UserName = attestationResult.UserEntity.Name,
+            };
+
+            await userManager.CreateAsync(user);
+            await userManager.AddOrUpdatePasskeyAsync(user, attestationResult.Passkey);
+            await signInManager.SignInAsync(user, isPersistent: true);
+            return Results.Ok();
+        });
+        
+        accountGroup.MapPost("/SignInWithPasskey", async (
+            HttpContext context,
+            [FromServices] UserManager<ApplicationUser> userManager,
+            [FromServices] SignInManager<ApplicationUser> signInManager,
+            [FromServices] IAntiforgery antiforgery,
+            [FromBody] string credentialJson) =>
+        {
+            await antiforgery.ValidateRequestAsync(context);
+
+            var attestationResult = await signInManager.PerformPasskeyAssertionAsync(credentialJson);
+            if (!attestationResult.Succeeded)
+                return Results.BadRequest();
+
+            var user = await userManager.FindByPasskeyIdAsync(attestationResult.Passkey.CredentialId);
+            if (user == null)
+                return Results.NotFound();
+            await signInManager.SignInAsync(user, isPersistent: true);
+            return Results.Ok();
+        });
+
+        accountGroup.MapPost("/RequestToken", (
+            HttpContext context,
+            [FromServices] IAntiforgery antiforgery
+        ) =>
+        {
+            var tokens = antiforgery.GetAndStoreTokens(context);
+            return TypedResults.Json(new { tokens.HeaderName, tokens.RequestToken });
         });
 
         accountGroup.MapPost("/PasskeyRequestOptions", async (
@@ -104,7 +162,8 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
                 "/Account/Manage/ExternalLogins",
                 QueryString.Create("Action", ExternalLogins.LinkLoginCallbackAction));
 
-            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, signInManager.UserManager.GetUserId(context.User));
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl,
+                signInManager.UserManager.GetUserId(context.User));
             return TypedResults.Challenge(properties, [provider]);
         });
 
@@ -127,8 +186,8 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
 
             // Only include personal data for download
             var personalData = new Dictionary<string, string>();
-            var personalDataProps = typeof(ApplicationUser).GetProperties().Where(
-                prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
+            var personalDataProps = typeof(ApplicationUser).GetProperties()
+                .Where(prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
             foreach (var p in personalDataProps)
             {
                 personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");

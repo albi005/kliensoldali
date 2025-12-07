@@ -55,11 +55,11 @@ customElements.define('passkey-submit', class extends HTMLElement {
         this.internals.form.addEventListener('submit', (event) => {
             if (event.submitter?.name === '__passkeySubmit') {
                 event.preventDefault();
-                this.obtainAndSubmitCredential();
+                this.obtainAndSubmitCredential().then();
             }
         });
 
-        this.tryAutofillPasskey();
+        this.tryAutofillPasskey().then();
     }
 
     disconnectedCallback() {
