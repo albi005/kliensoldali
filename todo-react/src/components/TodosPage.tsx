@@ -32,7 +32,6 @@ export function TodosPage() {
     
     const onRemove = (id: number)   => setTodos(ts => ts.filter(t => t.id !== id));
     const onModify = (newTodo: Todo) => setTodos(ts => ts.map(t => t.id === newTodo.id ? newTodo : t));
-    const onAdd = () => setTodos(ts => [...ts, {id: todos.length + 1, title: "", isDone: false}]);
     const save = async (todo: Todo) => {
         setSelectedTodoId(null);
         const id = await saveTodo(todo);
@@ -42,7 +41,7 @@ export function TodosPage() {
     };
 
     return <>
-        <Button startIcon={<Add/>} onClick={onAdd}>New To-do</Button>
+        <Button startIcon={<Add/>} onClick={() => setSelectedTodoId(0)}>New To-do</Button>
         <List>
             {
                 selectedTodoId === 0 && <>
@@ -70,8 +69,10 @@ export function TodosPage() {
                         key={todo.id}
                         todo={todo}
                         onSelect={() => setSelectedTodoId(todo.id)}
-                        onChecked={isChecked => {
-                            onModify({...todo, isDone: isChecked})
+                        onChecked={async isChecked => {
+                            const modifiedTodo = {...todo, isDone: isChecked};
+                            onModify(modifiedTodo);
+                            await save(modifiedTodo);
                         }}
                     />;
                 })

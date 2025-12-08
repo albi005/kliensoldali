@@ -1,7 +1,5 @@
 import type {Todo} from "@/types.ts";
 import {Checkbox, ListItem, ListItemButton, ListItemText} from "@mui/material";
-import {marked} from "marked";
-import {useMemo} from "react";
 import Markdown from "marked-react";
 
 export interface TodoPreviewProps {
@@ -11,13 +9,6 @@ export interface TodoPreviewProps {
 }
 
 export default function TodoPreview({todo, onSelect, onChecked}: TodoPreviewProps) {
-    const descHtml = useMemo(
-        () => todo.description
-            ? marked(todo.description, {async: false}) as string
-            : null,
-        [todo.description]
-    );
-    
     return <ListItem
         key={todo.id}
         secondaryAction={
