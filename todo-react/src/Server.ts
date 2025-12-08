@@ -163,7 +163,13 @@ function urlB64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
  */
 export async function requestTodos(): Promise<Todo[]> {
     const response = await fetchWithErrorHandling('/api/todos');
-    return await response.json();
+    const todos: Todo[] = await response.json();
+    for (const todo of todos) {
+        if (todo.dueDate)
+            // parse dueDate
+            todo.dueDate = new Date(todo.dueDate as unknown as string);
+    }
+    return todos;
 }
 
 
