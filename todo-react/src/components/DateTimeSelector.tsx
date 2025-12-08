@@ -7,6 +7,11 @@ export type DateTimeSelectorProps = {
     onChange: (date: Date | undefined) => void;
 }
 
+/**
+ * Allows selecting a date and a time in the form of a JS Date.
+ * @param value the currently selected date and time, or undefined if no date is selected
+ * @param onChange a callback invoked when the selected date and time changes
+ */
 export default function DateTimeSelector({value, onChange}: DateTimeSelectorProps) {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>

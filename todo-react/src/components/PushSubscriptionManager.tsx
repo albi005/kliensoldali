@@ -24,6 +24,10 @@ function getVapidPublicKey(): Promise<BufferSource> {
 let vapidPublicKeyCache: Promise<BufferSource>;
 
 
+/**
+ * Handles subscribing to and unsubscribing from push notifications.
+ * Renders an icon button that when clicked, toggles between the two states.
+ */
 export default function PushSubscriptionManager() {
     const [endpoints, setEndpoints] = useState<string[]>([]);
     const [endpoint, setEndpoint] = useState<string | null>(null);

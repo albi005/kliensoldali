@@ -2,6 +2,9 @@ import {Button} from "@mui/material";
 import {requestCredential, requestRequestToken, server, signInWithCredential} from "@/Server.ts";
 import {useAuth} from "@/components/AuthProvider.tsx";
 
+/**
+ * Handles signing in using a Passkey
+ */
 export default function SignInButton() {
     const auth = useAuth();
 
@@ -9,9 +12,9 @@ export default function SignInButton() {
         const {headerName, requestToken} = await requestRequestToken();
         const headers = {[headerName]: requestToken,};
         try {
-            const credential = await requestCredential(null, "optional", headers, undefined);
+            const credential = await requestCredential("optional", headers);
             if (!credential) return;
-            await signInWithCredential(credential, headers, undefined);
+            await signInWithCredential(credential, headers);
             const userId = await server.me();
             auth.logIn(userId);
         }
@@ -21,7 +24,7 @@ export default function SignInButton() {
     
     return <>
         <Button onClick={logIn} variant="outlined">
-            Log in
+            Sign In
         </Button>
     </>;
 }

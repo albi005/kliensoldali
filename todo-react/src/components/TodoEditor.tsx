@@ -13,11 +13,24 @@ import DateTimeSelector from "@/components/DateTimeSelector.tsx";
 
 export type TodoEditorProps = {
     todo: Todo
+    /**
+     * Called when a Todo has been modified
+     * @param newValue the modified todo
+     */
     onChange: (newValue: Todo) => void
+    /**
+     * Called when the Todo should be deleted
+     */
     onDelete: () => void
+    /**
+     * Called when the user has finished editing the Todo and it should be updated on the server
+     */
     onSave: () => void
 }
 
+/**
+ * Allows editing the title, isDone, description and dueDate of a To-do.
+ */
 export default function TodoEditor({todo, onChange, onDelete, onSave}: TodoEditorProps) {
     return (
         <ListItem

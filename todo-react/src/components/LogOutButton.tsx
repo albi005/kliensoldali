@@ -3,6 +3,9 @@ import {Button} from "@mui/material";
 import {server} from "@/Server.ts";
 import Logout from "@mui/icons-material/Logout";
 
+/**
+ * Handles logging out
+ */
 export default function LogOutButton() {
     const auth = useAuth();
     

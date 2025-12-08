@@ -2,10 +2,13 @@ import {useAuth} from "@/components/AuthProvider.tsx";
 import {addPasskey, createCredential, requestRequestToken} from "@/Server.ts";
 import {Button, type SnackbarCloseReason} from "@mui/material";
 import Add from "@mui/icons-material/Add";
-import {type SyntheticEvent, useState} from "react";
+import {type JSX, type SyntheticEvent, useState} from "react";
 import Snackbar from '@mui/material/Snackbar';
 
-export default function AddPasskeyButton() {
+/**
+ * Allows adding a new Passkey to the current user's account.
+ */
+export default function AddPasskeyButton(): JSX.Element {
     const auth = useAuth();
     const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -14,17 +17,13 @@ export default function AddPasskeyButton() {
         const headers = {[headerName]: requestToken};
         let credential;
         try {
-            credential = await createCredential(headers, undefined);
+            credential = await createCredential(headers);
             if (!credential) return;
             await addPasskey(credential, headers);
             setSnackbarOpen(true);
         }
         catch (e) {
         }
-    };
-
-    const handleClick = () => {
-        setSnackbarOpen(true);
     };
 
     const handleClose = (

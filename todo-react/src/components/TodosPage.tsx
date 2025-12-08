@@ -8,6 +8,9 @@ import TodoEditor from "@/components/TodoEditor.tsx";
 import Button from "@mui/material/Button";
 import Add from "@mui/icons-material/Add";
 
+/**
+ * Renders a list of To-dos. Allows adding new To-dos and editing existing ones.
+ */
 export function TodosPage() {
     const {userId} = useAuth();
     const [todos, setTodos] = useState<Todo[]>([]);

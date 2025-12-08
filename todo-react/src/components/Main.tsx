@@ -2,6 +2,9 @@ import {useAuth} from "@/components/AuthProvider.tsx";
 import {Login} from "./Login";
 import {LoggedIn} from "@/components/LoggedIn.tsx";
 
+/**
+ * Renders the views depending on the auth state.
+ */
 export default function Main() {
     const {userId} = useAuth();
 

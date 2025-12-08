@@ -4,10 +4,20 @@ import Markdown from "marked-react";
 
 export interface TodoPreviewProps {
     todo: Todo
+    /**
+     * Called when the To-do should be selected for editing.
+     */
     onSelect: () => void
+    /**
+     * Called when the To-do's isDone state should be changed.'
+     * @param checked the new isDone state of the To-do
+     */
     onChecked: (checked: boolean) => void
 }
 
+/**
+ * Renders the title and description of a To-do. Additionally, allows checking the To-do.
+ */
 export default function TodoPreview({todo, onSelect, onChecked}: TodoPreviewProps) {
     return <ListItem
         key={todo.id}
