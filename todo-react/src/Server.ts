@@ -47,6 +47,14 @@ export async function registerWithPasskey(credential: PublicKeyCredential, heade
     });
 }
 
+export async function addPasskey(credential: PublicKeyCredential, headers: { [x: number]: any; }) {
+    await fetchWithErrorHandling('/Account/AddPasskey', {
+        method: 'POST',
+        headers: {...headers, 'Content-Type': 'application/json'},
+        body: JSON.stringify(JSON.stringify(credential)),
+    });
+}
+
 export async function signInWithCredential(credential: PublicKeyCredential, headers: { [x: number]: any; }, signal: any) {
     const response = await fetchWithErrorHandling('/Account/SignInWithPasskey', {
         method: 'POST',

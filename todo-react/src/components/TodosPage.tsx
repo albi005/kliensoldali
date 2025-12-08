@@ -41,7 +41,7 @@ export function TodosPage() {
     };
 
     return <>
-        <Button startIcon={<Add/>} onClick={() => setSelectedTodoId(0)}>New To-do</Button>
+        <Button startIcon={<Add/>} variant="outlined" onClick={() => setSelectedTodoId(0)}>New To-do</Button>
         <List>
             {
                 selectedTodoId === 0 && <>

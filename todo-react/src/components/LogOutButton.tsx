@@ -12,7 +12,7 @@ export default function LogOutButton() {
         auth.logOut();
     };
     
-    return <Button endIcon={<Logout/>} onClick={logOut} variant="text">
+    return <Button startIcon={<Logout/>} onClick={logOut} variant="text">
         Log out
     </Button>;
 }

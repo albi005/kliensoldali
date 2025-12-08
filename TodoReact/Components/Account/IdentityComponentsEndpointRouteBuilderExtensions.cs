@@ -103,7 +103,25 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
             await signInManager.SignInAsync(user, isPersistent: true);
             return Results.Ok();
         });
-        
+
+        accountGroup.MapPost("/AddPasskey", async (
+            HttpContext context,
+            [FromServices] UserManager<ApplicationUser> userManager,
+            [FromServices] SignInManager<ApplicationUser> signInManager,
+            [FromServices] IAntiforgery antiforgery,
+            [FromBody] string credentialJson) =>
+        {
+            await antiforgery.ValidateRequestAsync(context);
+
+            var attestationResult = await signInManager.PerformPasskeyAttestationAsync(credentialJson);
+            if (!attestationResult.Succeeded)
+                return Results.BadRequest();
+
+            await userManager.AddOrUpdatePasskeyAsync(new() { Id = attestationResult.UserEntity.Id },
+                attestationResult.Passkey);
+            return Results.Ok();
+        });
+
         accountGroup.MapPost("/SignInWithPasskey", async (
             HttpContext context,
             [FromServices] UserManager<ApplicationUser> userManager,
