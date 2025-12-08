@@ -1,6 +1,8 @@
 import type {Todo} from "@/types.ts";
 import {Checkbox, ListItem, ListItemButton, ListItemText} from "@mui/material";
 import Markdown from "marked-react";
+import DateDisplay from "@/components/DateDisplay.tsx";
+import {Stack} from "@mui/material";
 
 export interface TodoPreviewProps {
     todo: Todo
@@ -30,7 +32,7 @@ export default function TodoPreview({todo, onSelect, onChecked}: TodoPreviewProp
         disablePadding>
         <ListItemButton onClick={onSelect}>
             <ListItemText
-                primary={<b>{todo.title}</b>}
+                primary={<Stack direction="row" gap={1}><b>{todo.title}</b><DateDisplay date={todo.dueDate}/></Stack>}
                 secondary={<Markdown value={todo.description}/>}
             />
         </ListItemButton>
