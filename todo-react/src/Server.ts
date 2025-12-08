@@ -1,6 +1,6 @@
 import type {Todo} from "@/types.ts";
 
-const baseUrl = "http://localhost:5157";
+const baseUrl = "https://todo-api.alb1.hu";
 
 async function fetchWithErrorHandling(url: string | URL | Request, options: RequestInit = {}) {
     url = baseUrl + url;

@@ -1,7 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TodoReact.Components;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using TodoReact.Components.Account;
+using TodoReact.Components;
 using TodoReact.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +30,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5156")
+        policy.WithOrigins("http://localhost:5156", "https://water:5156","https://todo.alb1.hu")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -42,14 +48,28 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.Configure<IdentityPasskeyOptions>(options =>
+{
+    options.ServerDomain = "todo.alb1.hu";
+});
+
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {
-        options.SignIn.RequireConfirmedAccount = true;
+        options.SignIn.RequireConfirmedAccount = false;
         options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+
+// Set the requester's IP address and the original protocol using headers set by the reverse proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownProxies.Clear(); // trust headers from all proxies
+    options.KnownNetworks.Clear();
+});
+
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -60,6 +80,9 @@ var app = builder.Build();
     var services = serviceScope.ServiceProvider;
     await services.GetRequiredService<ApplicationDbContext>().Database.MigrateAsync();
 }
+
+app.UseForwardedHeaders();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

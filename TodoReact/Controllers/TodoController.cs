@@ -54,7 +54,7 @@ public class TodoController(
 
     private async Task SendPush(List<PushSubscription> subscriptions, string title)
     {
-        await Task.Delay(1000);
+        await Task.Delay(10000);
         foreach (PushSubscription subscription in subscriptions)
         {
             Lib.Net.Http.WebPush.PushSubscription pushSubscription = new() { Endpoint = subscription.Endpoint };

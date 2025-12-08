@@ -17,6 +17,7 @@ export default function RegisterButton() {
             auth.logIn(userId);
         }
         catch (e) {
+            console.log(e);
         }
     };
     
