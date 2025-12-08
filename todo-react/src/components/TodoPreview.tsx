@@ -6,11 +6,11 @@ import Markdown from "marked-react";
 
 export interface TodoPreviewProps {
     todo: Todo
-    onRemove: () => void
     onSelect: () => void
+    onChecked: (checked: boolean) => void
 }
 
-export default function TodoPreview({todo, onSelect, onRemove}: TodoPreviewProps) {
+export default function TodoPreview({todo, onSelect, onChecked}: TodoPreviewProps) {
     const descHtml = useMemo(
         () => todo.description
             ? marked(todo.description, {async: false}) as string
@@ -22,8 +22,8 @@ export default function TodoPreview({todo, onSelect, onRemove}: TodoPreviewProps
         key={todo.id}
         secondaryAction={
             <Checkbox edge="end"
-                // onChange={handleToggle(value)}
-                // checked={checked.includes(value)}
+                onClick={() => onChecked(!todo.isDone)}
+                checked={todo.isDone}
             />
         }
         disablePadding>

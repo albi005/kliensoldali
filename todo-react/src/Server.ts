@@ -116,6 +116,15 @@ export async function requestTodos(): Promise<Todo[]> {
     return await response.json();
 }
 
+export async function saveTodo(todo: Todo) {
+    const response = await fetchWithErrorHandling('/api/todos', {
+        method: "PUT",
+        body: JSON.stringify(todo),
+        headers: {'Content-Type': 'application/json'}
+    });
+    return (await response.json()) as number;
+}
+
 export const server = new class Server {
     /**
      * Returns the user's ID, or an empty string if the user is not logged in.
